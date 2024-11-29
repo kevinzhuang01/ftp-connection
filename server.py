@@ -30,7 +30,7 @@ Upload Function:
 - Send upload details
 """
 
-def upload() -> None:
+def upload_files() -> None:
     connection.send('1')
 
     file_name_size = struct.unpack('h',connection.recv(2))[0]
@@ -151,8 +151,33 @@ Quit Program:
 """
 
 def quit_program()-> None:
-    #TO-DO:
+    #TO-DO: Getting Errors
     connection.send(1)
     connection.close()
     socket.close()
     return
+
+
+
+"""
+ Enter into a while loop to receive commands from client
+"""
+while True:
+
+    print("\n\nWaiting for instruction")
+    data = connection.recv(buffer_size)
+    print("\nReceived instruction: {}".format(data))
+    
+    if data == "Upload":
+        upload_files()
+    elif data == "List":
+        list_files()
+    elif data == "Download":
+        download_files()
+    elif data == "Delete":
+        delete_files()
+    elif data == "QUIT":
+        quit_program()
+        
+    # Reset the data to loop
+    data = None
