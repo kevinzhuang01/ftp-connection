@@ -110,8 +110,49 @@ def download_files()-> None:
         return
 
     connection.recv(buffer_size)
-    #start_time = time.time()
-    #print('Sending file...')
-
+  
     #Sending file and unpacking content (current_time vs start_time)
-    
+    #TO-DO: Send download details and break data into chunks
+
+
+"""
+Delete Files:
+- Checks if file details and checks if directory exists
+- If client presses 'Y' , it confirms the deletion of file
+"""
+
+def delete_files()-> None:
+    connection.send(1)
+
+    file_name_length = struct.unpack("h", connection.recv(2))[0]
+    file_name = connection.recv(file_name_length)
+
+    if os.path.isfile(file_name):
+        connection.send(struct.pack("i", 1))
+    else:
+        connection.send(struct.pack("i", -1))
+        
+        confirm_delete= connection.recv(buffer_size)
+        if confirm_delete == 'Y':
+            try:
+                os.remove(file_name)
+                connection.send(struct.pack('i',1))
+            except:
+                print("Failed to delete {}".format(file_name))
+                connection.send(struct.pack("i", -1))
+        else:
+            print('Deleting Process Canceled by Client!')
+    return
+
+"""
+Quit Program:
+- Sends a connection to confirm to quit
+- Closes and restarts the server
+"""
+
+def quit_program()-> None:
+    #TO-DO:
+    connection.send(1)
+    connection.close()
+    socket.close()
+    return
