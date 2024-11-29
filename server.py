@@ -4,6 +4,8 @@ import time
 import os # Used for Operating System functions
 import struct # Used for data exchange with external sources( Files/ Network Connections)
 
+print("\nWelcome to the FTP server.\n\nTo get started, connect a client.")
+
 """
 Initialize socket pre-reqs
 Then create socket connection
@@ -178,6 +180,6 @@ while True:
         delete_files()
     elif data == "QUIT":
         quit_program()
-        
+
     # Reset the data to loop
     data = None
