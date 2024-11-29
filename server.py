@@ -1,8 +1,8 @@
-import socket
-import sys
-import time
-import os
-import struct
+import socket # Used for socket connection
+import sys # Used to get size of object in bytes
+import time 
+import os # Used for Operating System functions
+import struct # Used for data exchange with external sources( Files/ Network Connections)
 
 """
 Initialize socket pre-reqs
@@ -38,13 +38,13 @@ def upload() -> None:
 
     connection.send('1')
    
-    file_size = struct.unpack("i", conn.recv(4))[0]
+    file_size = struct.unpack("i", connection.recv(4))[0]
     
     start_time = time.time()
     output_file = open(file_name, "wb")
     
     bytes_received = 0
-    
+
     print("\nReceiving...")
 
     while bytes_received < file_size:
@@ -58,3 +58,60 @@ def upload() -> None:
     connection.send(struct.pack("f", time.time() - start_time))
     connection.send(struct.pack("i", file_size))
     return
+
+"""
+List Files:
+- List the files in the current directory
+- Sends over the number of files so client knows what to expect
+- File contains size,name,content size
+"""
+
+def list_files()-> None:
+    print("Listing files...")
+
+    listing = os.listdir(os.getcwd())
+
+    connection.send(struct.pack("i", len(listing)))
+    total_directory_size = 0
+    
+    for i in listing:
+    
+        connection.send(struct.pack("i", sys.getsizeof(i)))
+       
+        connection.send(i)
+        
+        connection.send(struct.pack("i", os.path.getsize(i)))
+        total_directory_size += os.path.getsize(i)
+        
+        connection.recv(buffer_size)
+        
+        connection.send(struct.pack("i", total_directory_size))
+        
+        connection.recv(buffer_size)
+    print("Successfully sent file listing")
+    return
+
+def download_files()-> None:
+    connection.send('1')
+
+    file_name_length = struct.unpack('h',connection.recv(2))[0]
+
+    print(file_name_length)
+
+    file_name = connection.recv(file_name_length)
+
+    print(file_name)
+
+    if os.path.isfile(file_name):
+        connection.send(struct.pack('i',os.path.getsize(file_name)))
+    else:
+        print('File name not valid')
+        connection.send(struct.pack('i',-1))
+        return
+
+    connection.recv(buffer_size)
+    #start_time = time.time()
+    #print('Sending file...')
+
+    #Sending file and unpacking content (current_time vs start_time)
+    
